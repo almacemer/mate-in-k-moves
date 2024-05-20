@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mate in k moves</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    <style>
+        #image-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        #moves {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body style="background-color:#303030; color: white">
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col">
+                <div class="row"> 
+                    <div class="col-sm">
+                        <input type="number" class="form-control" id="moves-number" name="moves-number" min="1" max="5" placeholder="Find mate in">
+                    </div>
+                    <div class="col-sm">
+                        <button class="btn btn-info" type="button" id="generate-board-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+                                <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9"/>
+                                <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/>
+                            </svg>
+                            Generate board
+                        </button>
+                    </div>
+                    <div class="col-sm">
+                        <button class="btn btn-info" type="button" id="solve-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-magic" viewBox="0 0 16 16">
+                                <path d="M9.5 2.672a.5.5 0 1 0 1 0V.843a.5.5 0 0 0-1 0zm4.5.035A.5.5 0 0 0 13.293 2L12 3.293a.5.5 0 1 0 .707.707zM7.293 4A.5.5 0 1 0 8 3.293L6.707 2A.5.5 0 0 0 6 2.707zm-.621 2.5a.5.5 0 1 0 0-1H4.843a.5.5 0 1 0 0 1zm8.485 0a.5.5 0 1 0 0-1h-1.829a.5.5 0 0 0 0 1zM13.293 10A.5.5 0 1 0 14 9.293L12.707 8a.5.5 0 1 0-.707.707zM9.5 11.157a.5.5 0 0 0 1 0V9.328a.5.5 0 0 0-1 0zm1.854-5.097a.5.5 0 0 0 0-.706l-.708-.708a.5.5 0 0 0-.707 0L8.646 5.94a.5.5 0 0 0 0 .707l.708.708a.5.5 0 0 0 .707 0l1.293-1.293Zm-3 3a.5.5 0 0 0 0-.706l-.708-.708a.5.5 0 0 0-.707 0L.646 13.94a.5.5 0 0 0 0 .707l.708.708a.5.5 0 0 0 .707 0z"/>
+                            </svg>
+                            Solve
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div id="image-container" class="text-center">
+                        {% if image %}
+                            <img id="current-image" src="{{image}}" class="img-fluid" alt="Image">
+                        {% else %}
+                            <img id="current-image" src="static/images/image0.svg" class="img-fluid" alt="Image">
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row justify-content-center mt-3 mx-3">
+                    <div class="col ml-4">
+                        <button id="previous-btn" class="btn btn-info">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                            </svg>
+                            Previous move
+                        </button>
+                    </div>
+                    <div class="col mr-5">
+                        <button id="next-btn" class="btn btn-info">
+                            Next move
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                                <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="col" style="background-color:#232121; color: white">
+                    <div class="row m-3">
+                        <h3 id="text">First move: </h3>
+                    </div>
+                    <div class="row ml-3">
+                        <h6 id="time">Time:</h6>
+                    </div>
+                    <div class="row ml-3">
+                        <h6 id="moves-counter">Move History:</h6>
+                    </div>
+                    <div class="row ml-3">
+                        <div>
+                            <ol id="moves-list">
+                            </ol>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        image_path = "static/images/image"
+        var images = ["static/images/image0.svg"];
+        var currentImageIndex = 0;
+
+        $(document).ready(function() {
+            $("#previous-btn").click(function() {
+                console.log(images.length)
+                if (currentImageIndex > 0) {
+                    currentImageIndex--;
+                    displayCurrentImage();
+                    moves--;
+                    updateMovesCounter();
+                }
+            });
+
+            $("#next-btn").click(function() {
+                if (currentImageIndex < images.length - 1) {
+                    currentImageIndex++;
+                    displayCurrentImage();
+                    moves++;
+                    updateMovesCounter();
+                }
+            });
+
+            $("#generate-board-btn").click(function() {
+                var inputValue = $("#moves-number").val();
+                if (inputValue) {
+                    var that = this;
+                    currentMovesNumber = inputValue;
+                    $.ajax({
+                        url: '/generate-board',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ moves: currentMovesNumber }),
+                        success: function(response) {
+                            displayCurrentImage();
+                            location.reload();
+                        },
+                        error: function(xhr, status, error) {
+                            console.error(xhr.responseText);
+                        }
+                    });
+                }
+            });
+
+            $("#solve-btn").click(function() {
+                $.ajax({
+                    url: '/solve-board',
+                    type: 'GET',
+                    success: function(response) {
+                        updateImageArray(response.number_of_images);
+                        $('#text').text(response.text);
+                        $('#time').append(" " + response.time);
+                        var movesList = $("#moves-list");
+                        response.moves.forEach(function(move) {
+                            movesList.append("<li>" + move + "</li>");
+                        });
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+                });
+                
+            });
+            function displayCurrentImage() {
+                $("#current-image").attr("src", images[currentImageIndex]);
+            }
+
+            function updateImageArray(images_number) {
+                images = []
+                for (let i=0; i<=images_number; ++i) {
+                    images.push(image_path + i +".svg");
+                }
+                currentImageIndex = 0;
+            }
+        });
+    </script>
+</body>
+</html>
